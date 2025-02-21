@@ -20,7 +20,7 @@ create_bucket() {
     echo "Bucket $DO_BUCKET_NAME doesn't exist. Creating it now..."
 
     # create bucket
-    s3api create-bucket
+    s3 mb "s3://$DO_BUCKET_NAME"
 }
 
 ensure_bucket_exists() {
