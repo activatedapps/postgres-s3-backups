@@ -5,11 +5,11 @@ set -o errexit -o nounset -o pipefail
 export AWS_PAGER=""
 
 s3() {
-    aws s3 --endpoint "$DO_ENDPOINT" "$@"
+    aws s3 --endpoint-url "$DO_ENDPOINT" "$@"
 }
 
 s3api() {
-    aws s3api "$1" --endpoint "$DO_ENDPOINT" --bucket "$DO_BUCKET_NAME" "${@:2}"
+    aws s3api "$1" --endpoint-url "$DO_ENDPOINT" --bucket "$DO_BUCKET_NAME" "${@:2}"
 }
 
 bucket_exists() {
@@ -20,22 +20,7 @@ create_bucket() {
     echo "Bucket $DO_BUCKET_NAME doesn't exist. Creating it now..."
 
     # create bucket
-    s3api create-bucket \
-        --create-bucket-configuration LocationConstraint="$DO_ENDPOINT" \
-        --object-ownership BucketOwnerEnforced
-
-    # block public access
-    s3api put-public-access-block \
-        --public-access-block-configuration \
-        "BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true"
-
-    # enable versioning for objects in the bucket 
-    s3api put-bucket-versioning --versioning-configuration Status=Enabled
-
-    # encrypt objects in the bucket
-    s3api put-bucket-encryption \
-      --server-side-encryption-configuration \
-      '{"Rules": [{"ApplyServerSideEncryptionByDefault": {"SSEAlgorithm": "AES256"}}]}'
+    s3api create-bucket
 }
 
 ensure_bucket_exists() {
