@@ -5,23 +5,23 @@ set -o errexit -o nounset -o pipefail
 export AWS_PAGER=""
 
 s3() {
-    aws s3 --region "$AWS_REGION" "$@"
+    aws s3 --endpoint "$DO_ENDPOINT" "$@"
 }
 
 s3api() {
-    aws s3api "$1" --region "$AWS_REGION" --bucket "$S3_BUCKET_NAME" "${@:2}"
+    aws s3api "$1" --endpoint "$DO_ENDPOINT" --bucket "$DO_BUCKET_NAME" "${@:2}"
 }
 
 bucket_exists() {
-    s3 ls "$S3_BUCKET_NAME" &> /dev/null
+    s3 ls "$DO_BUCKET_NAME" &> /dev/null
 }
 
 create_bucket() {
-    echo "Bucket $S3_BUCKET_NAME doesn't exist. Creating it now..."
+    echo "Bucket $DO_BUCKET_NAME doesn't exist. Creating it now..."
 
     # create bucket
     s3api create-bucket \
-        --create-bucket-configuration LocationConstraint="$AWS_REGION" \
+        --create-bucket-configuration LocationConstraint="$DO_ENDPOINT" \
         --object-ownership BucketOwnerEnforced
 
     # block public access
@@ -52,7 +52,7 @@ pg_dump_database() {
 upload_to_bucket() {
     # if the zipped backup file is larger than 50 GB add the --expected-size option
     # see https://docs.aws.amazon.com/cli/latest/reference/s3/cp.html
-    s3 cp - "s3://$S3_BUCKET_NAME/$(date +%Y/%m/%d/backup-%H-%M-%S.sql.gz)"
+    s3 cp - "s3://$DO_BUCKET_NAME/$(date +%Y/%m/%d/backup-%H-%M-%S.sql.gz)"
 }
 
 main() {
