@@ -21,9 +21,9 @@ services:
       - key: DO_BUCKET_NAME
         sync: false
       # Looks like "AKIAXXXXXXXXXXXXXXXX"
-      - key: DO_ACCESS_KEY_ID
+      - key: AWS_ACCESS_KEY_ID
         sync: false
-      - key: DO_SECRET_ACCESS_KEY
+      - key: AWS_SECRET_ACCESS_KEY
         sync: false
       # Postgres version of your Postgres instance 
       # For example, 16
